@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Super Mario Odyssey Archipelago Tracker</title>
+    <script src="checks.js"></script>
+    <script src="tracker.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <table width="97%">
+        <tr>
+            <td class="trackerBoss" colspan="2">
+                <table width="100%" class="counterBR">
+                    <tr>
+                        <td id="coin">
+                            <img src="img/CoinMK8.png">
+                            <div id='coinCount'>0 / 2100</div>
+                        </td>
+                        <td id="knucklotec" style="opacity: 0.5">
+                            <img src="img/Knucklotec.png">
+                        </td>
+                        <td id="torkdrift" style="opacity: 0.5">
+                            <img src="img/Torkdrift.jpg">
+                        </td>
+                        <td id="mechawiggler" style="opacity: 0.5">
+                            <img src="img/Mechawiggler.jpg">
+                        </td>
+                        <td id="mollosque" style="opacity: 0.5">
+                            <img src="img/Mollosque-Lanceur.jpg">
+                        </td>
+                        <td id="cookatiel" style="opacity: 0.5">
+                            <img src="img/Cookatiel.jpg">
+                        </td>
+                        <td id="rdragon" style="opacity: 0.5">
+                            <img src="img/RDragon.jpg">
+                        </td>
+                        <td id="bowser" style="opacity: 0.5">
+                            <img src="img/Bowser.png">
+                            <div id='bowserCount'>0 / 3</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="log"></div>
+            </td>
+            <td>
+                <button onclick="disconnect()">Disconnect</button>
+            </td>
+        </tr>
+    </table>
+    <script src="loadChecks.js"></script>
+    <script src="visible.js"></script>
+    <script type="module">
+        import {
+            Client,
+            ITEMS_HANDLING_FLAGS,
+            SERVER_PACKET_TYPE,
+        } from "https://unpkg.com/archipelago.js@1.0.0/dist/archipelago.js";
+
+        // Create a new Archipelago client
+        const client = new Client();
+
+        var foundMoons = [];
+
+        const connectionInfo = {
+            hostname: sessionStorage.getItem('host'), // Replace with the actual AP server hostname.
+            port: parseInt(sessionStorage.getItem('port')), // Replace with the actual AP server port.
+            game: sessionStorage.getItem('game'), // Replace with the game name for this player.
+            name: sessionStorage.getItem('player'), // Replace with the player slot name.
+            items_handling: ITEMS_HANDLING_FLAGS.REMOTE_ALL,
+        };
+
+        // Set up event listeners
+        client.addListener(SERVER_PACKET_TYPE.CONNECTED, (packet) => {
+            console.log("Connected to server: ", packet);
+        });
+
+        client.addListener(SERVER_PACKET_TYPE.PRINT_JSON, (packet, message) => {
+            var oldmsg = document.getElementById('log').innerHTML;
+            document.getElementById('log').innerHTML = message + "<br>" + oldmsg;
+
+            if (message.includes('Ice Fist') && (message.includes('to ' + sessionStorage.getItem('player')) || message.includes(sessionStorage.getItem('player') + ' found'))) {
+                document.getElementById('knucklotec').style.opacity = "1";
+            }
+
+            if (message.includes('Uproot Remains') && (message.includes('to ' + sessionStorage.getItem('player')) || message.includes(sessionStorage.getItem('player') + ' found'))) {
+                document.getElementById('torkdrift').style.opacity = "1";
+            }
+
+            if (message.includes('Tank Key') && (message.includes('to ' + sessionStorage.getItem('player')) || message.includes(sessionStorage.getItem('player') + ' found'))) {
+                document.getElementById('mechawiggler').style.opacity = "1";
+            }
+
+            if (message.includes('Gushen Remains') && (message.includes('to ' + sessionStorage.getItem('player')) || message.includes(sessionStorage.getItem('player') + ' found'))) {
+                document.getElementById('mollosque').style.opacity = "1";
+            }
+
+            if (message.includes('Laddle') && (message.includes('to ' + sessionStorage.getItem('player')) || message.includes(sessionStorage.getItem('player') + ' found'))) {
+                document.getElementById('cookatiel').style.opacity = "1";
+            }
+
+            if (message.includes("Dragon's Crown") && (message.includes('to ' + sessionStorage.getItem('player')) || message.includes(sessionStorage.getItem('player') + ' found'))) {
+                document.getElementById('rdragon').style.opacity = "1";
+            }
+
+            if (message.includes("Bowser's Challenge") && (message.includes('to ' + sessionStorage.getItem('player')) || message.includes(sessionStorage.getItem('player') + ' found'))) {
+                var bowserCounter = parseInt(document.getElementById('bowserCount').innerHTML.substring(0, 1));
+
+                bowserCounter += 1;
+
+                document.getElementById('bowserCount').innerHTML = bowserCounter + ' / 3';
+
+                if (bowserCounter >= 3) {
+                    document.getElementById('bowser').style.opacity = "1";
+                }
+            }
+
+            if (message.includes("Coins+10") && (message.includes('to ' + sessionStorage.getItem('player')) || message.includes(sessionStorage.getItem('player') + ' found'))) {
+                var currCoins = 0;
+                var endIndex = document.getElementById('coinCount').innerHTML.indexOf('/');
+                currCoins = parseInt(document.getElementById('coinCount').innerText.substring(0, endIndex - 1));
+
+                var coinCounter = currCoins + 10;
+                document.getElementById('coinCount').innerHTML = coinCounter + ' / 2100'
+            }
+        });
+
+        // Connect to the Archipelago server
+        client
+            .connect(connectionInfo)
+            .then(() => {
+                console.log("Connected to the server");
+                // You are now connected and authenticated to the server. You can add more code here if need be.
+            })
+            .catch((error) => {
+                console.error("Failed to connect:", error);
+                // Handle the connection error.
+            });
+
+        // Disconnect from the server when unloading window.
+        window.addEventListener("beforeunload", () => {
+            client.disconnect();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Super Mario Odyssey Archipelago Tracker</title>
+    <script src="checks.js"></script>
+    <script src="tracker.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td class="header">Cap Kingdom</td>
+            <td class="header">Cascade Kingdom</td>
+            <td class="header">Sand Kingdom</td>
+            <td class="header">Lake Kingdom</td>
+            <td rowspan="4" class="tracker" width="310px">
+                <table>
+                    <tr>
+                        <td id="moon"><img src="img/Moon.png"></td>
+                        <td class="counter" id='moonCount'>0 / 75</td>
+                        <td><button class="button1" onclick="add('moon')">+ 1</button> <button class="button3"
+                                onclick="rem('moon')">-
+                                1</button>
+                            <!--<div style="text-align: center;"><input id="customMoon" type='text' onchange="addCustom()"
+                                    size="2"></div>-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="cascadeC"><img src="img/Cascade.png"></td>
+                        <td class="counter" id='cascadeCount'>0 / 1</td>
+                        <td><button class="button1" onclick="add('cascade')">+ 1</button> <button class="button3"
+                                onclick="rem('cascade')">- 1</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="sandC"><img src="img/Sand.png"></td>
+                        <td class="counter" id='sandCount'>0 / 4</td>
+                        <td><button class="button1" onclick="add('sand')">+ 1</button> <button class="button3"
+                                onclick="rem('sand')">-
+                                1</button></td>
+                    </tr>
+                    <tr>
+                        <td id="lakeC"><img src="img/Lake.png"></td>
+                        <td class="counter" id='lakeCount'>0 / 1</td>
+                        <td><button class="button1" onclick="add('lake')">+ 1</button> <button class="button3"
+                                onclick="rem('lake')">-
+                                1</button></td>
+                    </tr>
+                    <tr>
+                        <td id="woodedC"><img src="img/Wooded.png"></td>
+                        <td class="counter" id='woodedCount'>0 / 4</td>
+                        <td><button class="button1" onclick="add('wooded')">+ 1</button> <button class="button3"
+                                onclick="rem('wooded')">- 1</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="metroC"><img src="img/Metro.png"></td>
+                        <td class="counter" id='metroCount'>0 / 3</td>
+                        <td><button class="button1" onclick="add('metro')">+ 1</button> <button class="button3"
+                                onclick="rem('metro')">-
+                                1</button></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="checks">
+                <div class="scrollable" id="cap"></div>
+            </td>
+            <td class="checks">
+                <div class="scrollable" id="cascade"></div>
+            </td>
+            <td class="checks">
+                <div class="scrollable" id="sand"></div>
+            </td>
+            <td class="checks">
+                <div class="scrollable" id="lake"></div>
+            </td>
+        </tr>
+        <tr>
+            <td class="header">Wooded Kingdom</td>
+            <td class="header">Cloud Kingdom</td>
+            <td class="header">Lost Kingdom</td>
+            <td class="header">Metro Kingdom</td>
+        </tr>
+        <tr>
+            <td class="checks">
+                <div class="scrollable" id="wooded"></div>
+            </td>
+            <td class="checks">
+                <div class="scrollable" id="cloud"></div>
+            </td>
+            <td class="checks">
+                <div class="scrollable" id="lost"></div>
+            </td>
+            <td class="checks">
+                <div class="scrollable" id="metro"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <div id="log"></div>
+            </td>
+            <td>
+                <button onclick="disconnect()">Disconnect</button>
+            </td>
+        </tr>
+    </table>
+    <script src="loadChecks.js"></script>
+    <script src="visible.js"></script>
+    <script type="module">
+        import {
+            Client,
+            ITEMS_HANDLING_FLAGS,
+            SERVER_PACKET_TYPE,
+        } from "https://unpkg.com/archipelago.js@1.0.0/dist/archipelago.js";
+
+        // Create a new Archipelago client
+        const client = new Client();
+
+        var foundMoons = [];
+
+        const connectionInfo = {
+            hostname: sessionStorage.getItem('host'), // Replace with the actual AP server hostname.
+            port: parseInt(sessionStorage.getItem('port')), // Replace with the actual AP server port.
+            game: sessionStorage.getItem('game'), // Replace with the game name for this player.
+            name: sessionStorage.getItem('player'), // Replace with the player slot name.
+            items_handling: ITEMS_HANDLING_FLAGS.REMOTE_ALL,
+        };
+
+        // Set up event listeners
+        client.addListener(SERVER_PACKET_TYPE.CONNECTED, (packet) => {
+            console.log("Connected to server: ", packet);
+        });
+
+        client.addListener(SERVER_PACKET_TYPE.PRINT_JSON, (packet, message) => {
+            var oldmsg = document.getElementById('log').innerHTML;
+            document.getElementById('log').innerHTML = message + "<br>" + oldmsg;
+            if (message.includes('Power Moon') && !message.includes('Our First Power Moon')) {
+                if (message.includes('sent') || message.includes('found')) {
+                    if (message.substring(0, (message.length - 5)).includes('Power Moon')) {
+                        add('moon');
+                    } else {
+                        add('moon');
+                    }
+                }
+            }
+            if (message.includes('Cascade Story')) {
+                add('cascade')
+            }
+            if (message.includes('Sand Story')) {
+                add('sand')
+            }
+            if (message.includes('Lake Story')) {
+                add('lake')
+            }
+            if (message.includes('Wooded Story')) {
+                add('wooded')
+            }
+            if (message.includes('Metro Story')) {
+                add('metro')
+            }
+            for (i in data) {
+                if (message.includes(data[i].name)) {
+                    foundMoons.push(data[i].name);
+                }
+            }
+            console.log(foundMoons);
+            updateMoonList();
+        });
+
+        var j;
+        function updateMoonList() {
+            for (i in foundMoons) {
+                for (j in data) {
+                    if (foundMoons[i] == data[j].name) {
+                        document.getElementById("check" + j).style.display = "none";
+                    }
+                }
+            }
+        }
+
+        // Connect to the Archipelago server
+        client
+            .connect(connectionInfo)
+            .then(() => {
+                console.log("Connected to the server");
+                // You are now connected and authenticated to the server. You can add more code here if need be.
+            })
+            .catch((error) => {
+                console.error("Failed to connect:", error);
+                // Handle the connection error.
+            });
+
+        // Disconnect from the server when unloading window.
+        window.addEventListener("beforeunload", () => {
+            client.disconnect();
+        });
+    </script>
+</body>
+
+</html>

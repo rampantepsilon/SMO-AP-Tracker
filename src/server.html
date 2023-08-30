@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Super Mario Odyssey Archipelago Tracker</title>
+    <script src="checks.js"></script>
+    <script src="tracker.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <table style="width: 99vw; height: 97vh; text-align: center; vertical-align: middle;">
+        <tr>
+            <td style="text-align: right; width:40%">Hostname:</td>
+            <td style="text-align: left"><input id="hostname" type='text' class="login" size="40"
+                    value="archipelago.gg"></td>
+            <!--<td style="text-align: left"><input id="hostname" type='text' class="login" size="40" value="localhost">
+            </td>-->
+        </tr>
+        <tr>
+            <td style="text-align: right">Port:</td>
+            <td style="text-align: left"><input id="port" type='text' class="login" size="40" value="38281"></td>
+        </tr>
+        <tr>
+            <td style="text-align: right">Game Name:</td>
+            <td style="text-align: left"><input id="game" type='text' class="login" size="40"
+                    value="Manual_{GameName}_{PlayerName}"></td>
+            <!--<td style="text-align: left"><input id="game" type='text' class="login" size="40"
+                    value="Manual_SMO_BossRush"></td>-->
+        </tr>
+        <tr>
+            <td style="text-align: right">Player Name:</td>
+            <td style="text-align: left"><input id="player" type='text' class="login" size="40" value="Player 1">
+                <!--<td style="text-align: left"><input id="player" type='text' class="login" size="40"
+                    value="RampantEpsilonSM">-->
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button onclick="connect('festival')" style="width: 300px;">Connect<br>Festival%</button>
+                <button onclick="connect('boss')" style="width: 300px;">Connect<br>Boss Rush (WIP)</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 75%; vertical-align: bottom;">Note: Boss Rush uses a different APWorld file
+                for generation. This will change from WIP once it's been tested.</td>
+        </tr>
+    </table>
+
+    <script>
+        function connect(tracker) {
+            var host = document.getElementById('hostname').value;
+            var port = document.getElementById('port').value;
+            var game = document.getElementById('game').value;
+            var player = document.getElementById('player').value;
+
+            sessionStorage.setItem('host', host);
+            sessionStorage.setItem('port', port);
+            sessionStorage.setItem('game', game);
+            sessionStorage.setItem('player', player);
+
+            switch (tracker) {
+                case "festival":
+                    window.location.href = './festival.html'
+                    break;
+                case "boss":
+                    window.location.href = './boss.html'
+                    break;
+            }
+        }
+    </script>
+</body>
+
+</html>
