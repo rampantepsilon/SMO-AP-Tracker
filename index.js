@@ -33,17 +33,9 @@ const changelogOptions = {
     type: 'info',
     buttons: ['Close'],
     title: 'Changelog',
-    message: 'Changes to v1.0.0',
-    detail: `- Autotracker enabled if you connect to the AP Multiworld (local or hosted)
-    - Tracker will mark off locations when selected in the Manual Client
-    - Tracker will track checks from other players.
-
-    Changes to v1.0.1
-    - Added prefilled information for connection screen
-    - Fixed issue where fonts were too small to display on a stream capture
-    - Fixed issue where "Our First Power Moon!" would count as a power moon even if it wasn't.
-    - Fixed issue where the moon lists would temporarily reset when manually changing information
-    - Added starting works for BossRush APWorld
+    message: 'Changes to v1.0.1',
+    detail: `- Added Save/Load Features for the tracker (for multiday multiworlds)
+    - Added Auto-Save checkbox for auto-save (Defaulted to off incase you are doing multiple of the same tracker)
     
     Changes to come to v1.1.0+
     - Design Updates
