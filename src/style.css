@@ -108,6 +108,10 @@ button {
     padding: 10px 20px;
 }
 
+.connButton {
+    width: 250px;
+}
+
 .button1:hover {
     background-color: white;
     color: black;

@@ -104,13 +104,67 @@
             <td colspan="4">
                 <div id="log"></div>
             </td>
-            <td>
-                <button onclick="disconnect()">Disconnect</button>
+            <td style="text-align: center;">
+                <button class="connButton" onclick="disconnect()">Disconnect</button><br>
+                <button class="connButton" onclick="save()">Save Progress</button><br>
+                <button class="connButton" onclick="load()">Load Saved Progress</button>
+                <input type="checkbox" id="autosave">Auto-Save?
             </td>
         </tr>
     </table>
     <script src="loadChecks.js"></script>
     <script src="visible.js"></script>
+    <script>
+        var foundMoons = [];
+
+        var j;
+        function updateMoonList() {
+            for (i in foundMoons) {
+                for (j in data) {
+                    if (foundMoons[i] == data[j].name) {
+                        document.getElementById("check" + j).style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function save() {
+            localStorage.setItem('moonList', foundMoons)
+
+            var moonIndex = document.getElementById('moonCount').innerText.indexOf("/");
+            var casIndex = document.getElementById('cascadeCount').innerText.indexOf("/");
+            var sandIndex = document.getElementById('sandCount').innerText.indexOf("/");
+            var lakeIndex = document.getElementById('lakeCount').innerText.indexOf("/");
+            var woodIndex = document.getElementById('woodedCount').innerText.indexOf("/");
+            var metroIndex = document.getElementById('metroCount').innerText.indexOf("/");
+
+            var storage = [
+                parseInt(document.getElementById('moonCount').innerText.substring(0, moonIndex - 1)),
+                parseInt(document.getElementById('cascadeCount').innerText.substring(0, casIndex - 1)),
+                parseInt(document.getElementById('sandCount').innerText.substring(0, sandIndex - 1)),
+                parseInt(document.getElementById('lakeCount').innerText.substring(0, lakeIndex - 1)),
+                parseInt(document.getElementById('woodedCount').innerText.substring(0, woodIndex - 1)),
+                parseInt(document.getElementById('metroCount').innerText.substring(0, metroIndex - 1))
+            ];
+
+            localStorage.setItem('counts', storage)
+        }
+
+        function load() {
+            foundMoons = localStorage.getItem('moonList').split(',')
+            var counters = localStorage.getItem('counts').split(',')
+
+            document.getElementById('moonCount').innerHTML = counters[0] + " / 75";
+            document.getElementById('cascadeCount').innerHTML = counters[1] + " / 1";
+            document.getElementById('sandCount').innerHTML = counters[2] + " / 4";
+            document.getElementById('lakeCount').innerHTML = counters[3] + " / 1";
+            document.getElementById('woodedCount').innerHTML = counters[4] + " / 4";
+            document.getElementById('metroCount').innerHTML = counters[5] + " / 3";
+
+            updateMoonList();
+            updateMoons();
+        }
+    </script>
     <script type="module">
         import {
             Client,
@@ -120,8 +174,6 @@
 
         // Create a new Archipelago client
         const client = new Client();
-
-        var foundMoons = [];
 
         const connectionInfo = {
             hostname: sessionStorage.getItem('host'), // Replace with the actual AP server hostname.
@@ -170,18 +222,10 @@
             }
             console.log(foundMoons);
             updateMoonList();
-        });
-
-        var j;
-        function updateMoonList() {
-            for (i in foundMoons) {
-                for (j in data) {
-                    if (foundMoons[i] == data[j].name) {
-                        document.getElementById("check" + j).style.display = "none";
-                    }
-                }
+            if (document.getElementById('autosave').checked == true) {
+                save();
             }
-        }
+        });
 
         // Connect to the Archipelago server
         client
